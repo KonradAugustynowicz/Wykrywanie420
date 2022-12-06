@@ -5,6 +5,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.net.URL;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -17,13 +18,25 @@ public class PicturePanel extends JPanel implements MouseListener {
     int[][][] pixels;
     ThresholdInputDialog dialog;
 
+    public void setImgPath(URL imgPath) {
+        this.imgPath = imgPath;
+    }
+
+    URL imgPath = getClass().getResource("kampus-PB-analiza-terenow-zielonych.png");
+
+
     public PicturePanel() throws IOException {
         setSize(1000, 1000);
-        image = ImageIO.read((getClass().getResource("kampus-PB-analiza-terenow-zielonych.png")));
+        image = ImageIO.read((imgPath));
         JLabel label = new JLabel("", new ImageIcon(image), 0);
         pixels = new int[image.getHeight()][image.getWidth()][3];
         addMouseListener(this);
         dialog = new ThresholdInputDialog();
+    }
+
+    public void reset() throws IOException {
+        image = ImageIO.read(imgPath);
+        paintComponent(getGraphics());
     }
 
     public void displayImage(Graphics g) {
@@ -209,8 +222,25 @@ public class PicturePanel extends JPanel implements MouseListener {
         medianaFilter();
         dilatation();
         medianaFilter();
+        calculatePercent();
     }
-
+    public void calculatePercent(){
+        int sum = 0;
+        for(int y = 0; y < image.getHeight(); y++){
+            for(int x = 0; x < image.getWidth(); x++){
+                int pixel = (image.getRGB(x,y) & 0xff0000) >> 16;
+                if(pixel == 255){
+                    sum++;
+                }
+            }
+        }
+        double percent = Math.round(sum * 100.0 / (image.getHeight()*image.getWidth()) * 1.0);
+        JOptionPane.showMessageDialog(
+                null,
+                "Total percent of selected color(+-): "+ percent + " %",
+                "Completed!",
+                JOptionPane.INFORMATION_MESSAGE);
+    }
     @Override
     public void mousePressed(MouseEvent e) {
 

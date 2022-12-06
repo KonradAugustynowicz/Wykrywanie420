@@ -12,8 +12,9 @@ public class Frame extends JFrame {
         setResizable(false);
         PicturePanel pp =new PicturePanel();//kekw
         add(pp);
-        add(new OriginalPicture());
-//        MenuBar menuBar = new MenuBar(pp,this);
-//        this.setJMenuBar(menuBar);
+        OriginalPicture op = new OriginalPicture();
+        add(op);
+        MenuBar menuBar = new MenuBar(pp, op,this);
+        this.setJMenuBar(menuBar);
     }
 }
